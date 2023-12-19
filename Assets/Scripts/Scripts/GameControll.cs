@@ -9,46 +9,62 @@ public class GameControll : SingletonMono<GameControll>
 {
     //存储每个星星预制体
     public List<GameObject> starPrefabs;
+
     //数组存储所有星星
     public Star[,] allStarArray;
+
     //星星最开始生成位置，也就是棋盘左下角星星位置
     private Vector3 mStarCreatBasePosition;
+
     //棋盘位置 星星父对象容器
-    public Transform startContent;
+    [HideInInspector] public Transform startContent;
+
     //星星生成位置
     private Vector3 mStartPositon;
+
     //星星移动速度
     public float moveSpeed = 3f;
+
     //检测相关
     //检测后要消除的星星
     public List<Star> destoryStarList;
+
     //游戏结束星星列表
     public List<Star> overGameList;
+
     // 射线检测的距离设定
     public float checkDistance = 1.0f;
+
     //点击星星的collider
     //Collider2D ownCollider;
     //检测方位
     private Vector3[] mDerectionList = { Vector3.up * 59, Vector3.down * 59, Vector3.left * 59, Vector3.right * 59 };
+
     //星星list元素是满的吗
     public bool isFull = true;
+
     //是否需要清除所有星星
     public bool isClear = false;
+
     //奖励分数
     public int awardScore;
+
     //得分相关
     // 每消除一个星星的基础分
     public int baseScore = 10;
+
     // 多消除星星个数的额外分数
     public int extraScoreFactor = 2;
+
     //cavans缩放因子
     private float scaleFactor;
+
     //阻挡左移时点击的图片
     private GameObject image;
 
     private int columeCount;
 
-    public bool isStartGame;//是否开始游戏
+    public bool isStartGame; //是否开始游戏
 
     protected override void Awake()
     {
@@ -60,38 +76,60 @@ public class GameControll : SingletonMono<GameControll>
 
         columeCount = GameDataManager.colume;
     }
+
     void Start()
     {
-        //加载摄像机
-        ResMgr.GetInstance().LoadAsync<GameObject>("Prefabs/Camera", (a) => { });
-        //加载游戏面板Canvas
-        ResMgr.GetInstance().LoadAsync<GameObject>("Prefabs/GameCanvas", (a) =>
-        {
-            scaleFactor = a.GetComponent<Canvas>().scaleFactor;
-            //找到游戏面板的位置作为星星创建的父物体
-            startContent = GameObject.Find("GamePanel").transform;
-            //创建星星的初始位置
-            //mStarCreatBasePosition = GameObject.Find("CreatPoint").transform.localPosition;
-            mStarCreatBasePosition = new Vector3(-486, -906, 0);
-            //创建星星
-            //Invoke("CreatStar",1f);
-            UIManager.Instance.canvasTrans = startContent.parent;
-            //显示开始面板
-            UIManager.Instance.ShowPanel<StartPanel>();
-            //显示登录面板
-            UIManager.Instance.ShowPanel<LoginPanel>();
-    
-            image = FindObjectOfType<GamePanel>().transform.Find("Image").gameObject;
-            image.SetActive(false);
-            //播放背景音乐
-            MusicMgr.GetInstance().PlayBkMusic("Bk");
-            CreatStar();
-        });
+        scaleFactor = UIManager.Instance.Canvas.scaleFactor;
+        //找到游戏面板的位置作为星星创建的父物体
+        //创建星星的初始位置
+        //mStarCreatBasePosition = GameObject.Find("CreatPoint").transform.localPosition;
+        mStarCreatBasePosition = new Vector3(-486, -906, 0);
+        //创建星星
+        //Invoke("CreatStar",1f);
+        var gamePanel = UIManager.Instance.ShowPanel<GamePanel>();
+        //显示开始面板
+        UIManager.Instance.ShowPanel<StartPanel>();
+        //显示登录面板
+        UIManager.Instance.ShowPanel<LoginPanel>();
+
+        startContent = gamePanel.transform;
+
+        image = gamePanel.transform.Find("Image").gameObject;
+        image.SetActive(false);
+        //播放背景音乐
+        MusicMgr.GetInstance().PlayBkMusic("Bk");
+        CreatStar();
+
+        // //加载摄像机
+        // ResMgr.GetInstance().LoadAsync<GameObject>("Prefabs/Camera", (a) => { });
+        // //加载游戏面板Canvas
+        // ResMgr.GetInstance().LoadAsync<GameObject>("Prefabs/GameCanvas", (a) =>
+        // {
+        //     scaleFactor = a.GetComponent<Canvas>().scaleFactor;
+        //     //找到游戏面板的位置作为星星创建的父物体
+        //     //创建星星的初始位置
+        //     //mStarCreatBasePosition = GameObject.Find("CreatPoint").transform.localPosition;
+        //     mStarCreatBasePosition = new Vector3(-486, -906, 0);
+        //     //创建星星
+        //     //Invoke("CreatStar",1f);
+        //     var gamePanel = UIManager.Instance.ShowPanel<GamePanel>();
+        //     //显示开始面板
+        //     UIManager.Instance.ShowPanel<StartPanel>();
+        //     //显示登录面板
+        //     UIManager.Instance.ShowPanel<LoginPanel>();
+        //
+        //     startContent = gamePanel.transform;
+        //
+        //     image = gamePanel.transform.Find("Image").gameObject;
+        //     image.SetActive(false);
+        //     //播放背景音乐
+        //     MusicMgr.GetInstance().PlayBkMusic("Bk");
+        //     CreatStar();
+        // });
     }
 
     void Update()
     {
-
         //如果清除标记为真，清除游戏界面所有星星
         if (isClear)
         {
@@ -101,12 +139,12 @@ public class GameControll : SingletonMono<GameControll>
             Invoke("GameOverAfter", 3f);
         }
     }
+
     /// <summary>
     /// 创建星星
     /// </summary>
     public void CreatStar()
     {
-
         for (int i = 0; i < GameDataManager.row; i++)
         {
             for (int j = 0; j < GameDataManager.colume; j++)
@@ -115,20 +153,22 @@ public class GameControll : SingletonMono<GameControll>
                 mStartPositon = mStarCreatBasePosition + 108 * new Vector3(j, i, 0);
 
                 //实例化方块
-
                 GameObject StarObj = Instantiate(starPrefabs[Random.Range(0, 4)], startContent.GetChild(8));
+                var star = StarObj.GetComponent<Star>();
+                star.Init();
+                star.GetComponent<RectTransform>().anchoredPosition3D = mStartPositon;
 
-                allStarArray[i, j] = StarObj.GetComponent<Star>();
+                allStarArray[i, j] = star;
                 //设置方块的位置
-                allStarArray[i, j].GetComponent<RectTransform>().anchoredPosition3D = mStartPositon;
                 //设置行列索引
                 allStarArray[i, j].rowIndex = i;
                 allStarArray[i, j].columnIndex = j;
-
             }
         }
+
         isFull = true;
     }
+
     /// <summary>
     /// 射线检测星星上下左右位置是否有相同颜色星星
     /// </summary>
@@ -138,7 +178,8 @@ public class GameControll : SingletonMono<GameControll>
         foreach (var direction in mDerectionList)
         {
             Debug.DrawRay(StarTransform.position + direction, direction * checkDistance, Color.red, 5.0f); // 用以可视化
-            RaycastHit2D hit = Physics2D.Raycast(StarTransform.position + direction, direction, checkDistance, 1 << LayerMask.NameToLayer("Star"));
+            RaycastHit2D hit = Physics2D.Raycast(StarTransform.position + direction, direction, checkDistance,
+                1 << LayerMask.NameToLayer("Star"));
             if (hit.collider != null)
             {
                 Star hitStar = hit.collider.GetComponent<Star>();
@@ -163,10 +204,11 @@ public class GameControll : SingletonMono<GameControll>
                 Destroy(item.gameObject);
                 allStarArray[item.rowIndex, item.columnIndex] = null;
             }
+
             isFull = false;
             GetScore(destoryStarList);
-          DropStars();
-        //    ShiftStarsLeft();
+            DropStars();
+            //    ShiftStarsLeft();
             if (IsLevelOver())
             {
                 //print("关卡结束");
@@ -175,8 +217,8 @@ public class GameControll : SingletonMono<GameControll>
         }
 
         destoryStarList.Clear();
-
     }
+
     //场景中是否还有可以消除的星星
     bool CanEliminateStars()
     {
@@ -197,6 +239,7 @@ public class GameControll : SingletonMono<GameControll>
 
         return false; // 所有星星都无法消除
     }
+
     /// <summary>
     /// 上下左右是否有相同颜色星星
     /// </summary>
@@ -207,16 +250,19 @@ public class GameControll : SingletonMono<GameControll>
         {
             return true;
         }
+
         // 检查下方
         if (y - 1 > 0 && allStarArray[x, y - 1] && allStarArray[x, y].color == allStarArray[x, y - 1].color)
         {
             return true;
         }
+
         // 检查左侧
         if (x - 1 > 0 && allStarArray[x - 1, y] && allStarArray[x, y].color == allStarArray[x - 1, y].color)
         {
             return true;
         }
+
         // 检查右侧
         if (x + 1 < 12 && allStarArray[x + 1, y] && allStarArray[x, y].color == allStarArray[x + 1, y].color)
         {
@@ -225,6 +271,7 @@ public class GameControll : SingletonMono<GameControll>
 
         return false; // 四个方向都没有相同颜色的星星
     }
+
     /// <summary>
     /// 当前关卡是否结束
     /// </summary>
@@ -234,9 +281,12 @@ public class GameControll : SingletonMono<GameControll>
         {
             return false;
         }
+
         return !CanEliminateStars();
     }
-    int StartCoroutineCount;  //开启的协程数
+
+    int StartCoroutineCount; //开启的协程数
+
     /// <summary>
     /// 下落星星
     /// </summary>
@@ -263,31 +313,31 @@ public class GameControll : SingletonMono<GameControll>
 
                             allStarArray[x, y] = allStarArray[above, y];
                             // allStarArray[x, y].transform.position += Vector3.down * moveCount * 108*scaleFactor;
-                            allStarArray[x, y].gameObject.transform.DOMove(allStarArray[x, y].transform.position + Vector3.down * moveCount * 108 * scaleFactor, 0.1f);
-          
-                          //  StartCoroutine(Move(allStarArray[x, y].transform, allStarArray[x, y].transform.position + Vector3.down * moveCount * 108 * scaleFactor));
+                            allStarArray[x, y].gameObject.transform.DOMove(
+                                allStarArray[x, y].transform.position + Vector3.down * moveCount * 108 * scaleFactor,
+                                0.1f);
+
+                            //  StartCoroutine(Move(allStarArray[x, y].transform, allStarArray[x, y].transform.position + Vector3.down * moveCount * 108 * scaleFactor));
                             allStarArray[x, y].rowIndex = x;
                             allStarArray[x, y].columnIndex = y;
                             allStarArray[above, y] = null;
                             break;
                         }
+
                         if (above == GameDataManager.row - 1)
                         {
-                           StartCoroutine(Move(null,Vector3.zero, true));
+                            StartCoroutine(Move(null, Vector3.zero, true));
                         }
                     }
                 }
             }
         }
-
     }
 
     IEnumerator Move(Transform currentPos, Vector3 targetPos, bool last = false)
     {
-        
-            yield return new WaitForSeconds(0.3f);
-             ShiftStarsLeft();
-        
+        yield return new WaitForSeconds(0.3f);
+        ShiftStarsLeft();
     }
 
 
@@ -297,23 +347,23 @@ public class GameControll : SingletonMono<GameControll>
     public void ShiftStarsLeft()
     {
         bool[] Emptys = new bool[columeCount];
-        for (int y = 0;  y < GameDataManager.colume; y++)
-      // for (int y = GameDataManager.colume-1; y>=0&& y < GameDataManager.colume; y--)
-            {
+        for (int y = 0; y < GameDataManager.colume; y++)
+            // for (int y = GameDataManager.colume-1; y>=0&& y < GameDataManager.colume; y--)
+        {
             if (IsColumnEmpty(y))
             {
-               Emptys[y] = true;
+                Emptys[y] = true;
             }
         }
+
         StopAllCoroutines();
-       StartCoroutine( MoveColume(Emptys));
+        StartCoroutine(MoveColume(Emptys));
     }
 
 
     public IEnumerator MoveColume(bool[] Emptys)
     {
-   
-        for (int y = Emptys.Length-1;y>=0&& y < Emptys.Length; y--)
+        for (int y = Emptys.Length - 1; y >= 0 && y < Emptys.Length; y--)
         {
             if (Emptys[y])
             {
@@ -325,16 +375,16 @@ public class GameControll : SingletonMono<GameControll>
                         if (allStarArray[yy, x] != null)
                         {
                             allStarArray[yy, x - 1] = allStarArray[yy, x];
-                            allStarArray[yy, x - 1].gameObject.transform.DOMove(allStarArray[yy, x - 1].transform.position + Vector3.left * 108 * scaleFactor, 0.1f).OnStart(()=> { 
-                                
-                                  image.SetActive(true);
-                            });
+                            allStarArray[yy, x - 1].gameObject.transform
+                                .DOMove(allStarArray[yy, x - 1].transform.position + Vector3.left * 108 * scaleFactor,
+                                    0.1f).OnStart(() => { image.SetActive(true); });
                             allStarArray[yy, x - 1].rowIndex = yy;
                             allStarArray[yy, x - 1].columnIndex = x - 1;
                             allStarArray[yy, x] = null;
                         }
                     }
                 }
+
                 yield return new WaitForSeconds(0.1f); //0.15
             }
             else
@@ -342,8 +392,8 @@ public class GameControll : SingletonMono<GameControll>
                 continue;
             }
         }
-        image.SetActive(false);
 
+        image.SetActive(false);
     }
 
     //是否有空的一列
@@ -356,6 +406,7 @@ public class GameControll : SingletonMono<GameControll>
                 return false;
             }
         }
+
         return true;
     }
 
@@ -388,8 +439,8 @@ public class GameControll : SingletonMono<GameControll>
             overGameList.Clear();
             return true;
         }
-
     }
+
     /// <summary>
     /// 射线检测剩下的星星是否还有能消除的（未使用该函数）
     /// </summary>
@@ -398,7 +449,8 @@ public class GameControll : SingletonMono<GameControll>
         Transform StarTransform = onclickStar.transform;
         foreach (var direction in mDerectionList)
         {
-            RaycastHit2D hit = Physics2D.Raycast(StarTransform.position + direction, direction, checkDistance, 1 << LayerMask.NameToLayer("Star"));
+            RaycastHit2D hit = Physics2D.Raycast(StarTransform.position + direction, direction, checkDistance,
+                1 << LayerMask.NameToLayer("Star"));
             if (hit.collider != null)
             {
                 Star hitStar = hit.collider.GetComponent<Star>();
@@ -420,8 +472,10 @@ public class GameControll : SingletonMono<GameControll>
         {
             score += baseScore + (i * extraScoreFactor);
         }
+
         GameDataManager.CurrentScore += score;
     }
+
     //游戏关卡结束之后
     public void GameOverAfter()
     {
@@ -436,6 +490,7 @@ public class GameControll : SingletonMono<GameControll>
                 Destroy(item.gameObject);
             }
         }
+
         if (i < 10)
         {
             awardScore = 2000 - i * 100;
@@ -460,10 +515,13 @@ public class GameControll : SingletonMono<GameControll>
     /// </summary>
     public void CloseWinText()
     {
-        UIManager.Instance.HidePanel<EndPanel>();
-        startContent.GetComponent<GamePanel>().GameTime = 100;
+        var game = UIManager.Instance.GetPanel<GamePanel>();
+        game.winPanel.SetActive(false);
+        game.GameTime = 100;
+        
         CreatStar();
     }
+
     /// <summary>
     /// 隐藏奖励文字
     /// </summary>
@@ -481,9 +539,10 @@ public class GameControll : SingletonMono<GameControll>
         {
             GameDataManager.CurrentLevel++;
             GameDataManager.TargetScore += 2500;
+
             //print("分数大于目标分数");
-            UIManager.Instance.ShowPanel<EndPanel>();
-            startContent.GetComponent<GamePanel>().GameTime = 100;
+            var game = UIManager.Instance.GetPanel<GamePanel>();
+            game.winPanel.SetActive(true);
             Invoke("CloseWinText", 2f);
         }
         else

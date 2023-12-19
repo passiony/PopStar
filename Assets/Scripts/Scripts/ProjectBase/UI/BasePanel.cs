@@ -31,7 +31,10 @@ public abstract class BasePanel : MonoBehaviour
 
     protected virtual void Start()
     {
-        // Init();
+        if (GameControll.GetInstance())
+        {
+            Init();
+        }
     }
 
     /// <summary>

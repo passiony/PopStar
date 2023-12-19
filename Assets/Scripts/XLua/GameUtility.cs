@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// added by wsh @ 2017.12.25
 /// 功能：通用静态方法
 /// </summary>
 

@@ -109,7 +109,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -486, y: -906}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 108, y: 108}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1570928098986349003
@@ -571,9 +571,11 @@ MonoBehaviour:
   CurrentScore: {fileID: 7959239313813706960}
   SettingBtn: {fileID: 7959239312780920730}
   remainStarScore: {fileID: 3855900288497196487}
+  winPanel: {fileID: 1570928098986349003}
   GameTime: 100
   GameTimeTxt: {fileID: 3586113207416679342}
   gameStart: 0
+  CS: 1
   OnGameEnd:
     m_PersistentCalls:
       m_Calls: []

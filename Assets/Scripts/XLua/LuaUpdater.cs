@@ -5,6 +5,9 @@ using UnityEngine;
 using XLua;
 using Debug = UnityEngine.Debug;
 
+/// <summary>
+/// 调用Lua中Update
+/// </summary>
 [Hotfix]
 public class LuaUpdater : MonoBehaviour
 {
@@ -13,15 +16,12 @@ public class LuaUpdater : MonoBehaviour
     Action<float> luaFixedUpdate = null;
 
 #if UNITY_EDITOR
-#pragma warning disable 0414
-    // added by wsh @ 2017-12-29
     [SerializeField]
     long updateElapsedMilliseconds = 0;
     [SerializeField]
     long lateUpdateElapsedMilliseconds = 0;
     [SerializeField]
     long fixedUpdateElapsedMilliseconds = 0;
-#pragma warning restore 0414
     Stopwatch sw = new Stopwatch();
 #endif
 

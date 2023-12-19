@@ -11,11 +11,13 @@ public class UIManager
     private Dictionary<string, BasePanel> panelDic = new Dictionary<string, BasePanel>();
 
     //场景中的 Canvas对象 用于设置为面板的父对象
+    public Canvas Canvas;
     public Transform canvasTrans;
 
     private UIManager()
     {
         canvasTrans = GameObject.Find("UIRoot")?.transform;
+        Canvas = canvasTrans.GetComponent<Canvas>();
     }
 
     public float GetScaleFactor()

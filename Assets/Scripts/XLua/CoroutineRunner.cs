@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 
+/// <summary>
+/// lua使用C#携程辅助类
+/// </summary>
 [Hotfix]
 public class CoroutineRunner : MonoBehaviour
 {

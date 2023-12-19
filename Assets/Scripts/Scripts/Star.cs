@@ -24,13 +24,16 @@ public class Star : MonoBehaviour
     private void Awake()
     {
         button = GetComponent<Button>();
-        // button.onClick.AddListener(OnClick);
     }
-    //
-    // public void OnClick()
-    // {
-    //     GameControll.GetInstance().RaycastStar(this);
-    //     GameControll.GetInstance().DestroyDestroyStar();
-    // }
+
+    public void Init()
+    {
+        button.onClick.AddListener(OnClick);
+    }
+    public void OnClick()
+    {
+        GameControll.GetInstance().RaycastStar(this);
+        GameControll.GetInstance().DestroyDestroyStar();
+    }
     
 }

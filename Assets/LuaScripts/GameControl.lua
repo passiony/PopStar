@@ -7,11 +7,13 @@
 ---@class GameControl 游戏控制器
 local GameControl = {}
 
+--- 开始游戏
 function GameControl:Start()
     self:Init()
     self:CreateStar()
 end
 
+---初始化游戏参数
 function GameControl:Init()
     ---玩家的数组
     ---@type table
@@ -34,6 +36,8 @@ function GameControl:Init()
     --- 射线检测的距离设定
     ---@type number
     self.checkDistance = 1;
+    ---奖励
+    self.awardScore = 0;
     --- 每消除一个星星的基础分
     ---@type number
     self.baseScore = 10;

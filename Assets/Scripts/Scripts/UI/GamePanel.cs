@@ -9,7 +9,7 @@ public class GamePanel : BasePanel
     public Text CurrentScore;
     public Button SettingBtn;
     public Text remainStarScore;
-
+    public GameObject winPanel;
     public float GameTime;
     public Text GameTimeTxt;
 
@@ -49,18 +49,17 @@ public class GamePanel : BasePanel
             }
         }
 
-        // if (GameControll.GetInstance().isStartGame)
-        // {
-        //     getText();
-        //     if (GameTime <= 0)
-        //     {
-        //        GameControll.GetInstance(). isClear = false;
-        //         GameControll.GetInstance(). isFull = true;
-        //
-        //         GameControll.GetInstance().GameOverShow();
-        //         return;
-        //     }
-        // }
+        if (GameControll.GetInstance() && GameControll.GetInstance().isStartGame)
+        {
+            getText();
+            if (GameTime <= 0)
+            {
+                GameControll.GetInstance().isClear = false;
+                GameControll.GetInstance().isFull = true;
+
+                GameControll.GetInstance().GameOverShow();
+            }
+        }
     }
 
     void getText()
